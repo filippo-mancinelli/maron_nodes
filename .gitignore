@@ -1,1 +1,2 @@
-backend/src/main/application.properties
+backend/src/main/resources/application.properties
+.env

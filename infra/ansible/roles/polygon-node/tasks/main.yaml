@@ -1,0 +1,33 @@
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Ensure Docker is installed
+  apt:
+    name: docker.io
+    state: present
+
+- name: Create data directory
+  file:
+    path: "{{ polygon_data_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Deploy Polygon node container
+  docker_container:
+    name: polygon-node
+    image: "{{ polygon_docker_image }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ polygon_data_dir }}:/data"
+    ports:
+      - "{{ polygon_rpc_port }}:{{ polygon_rpc_port }}"
+    command: >
+      {{ polygon_network }}
+      --http
+      --http.addr 0.0.0.0
+      --http.vhosts=*
+      --http.api eth,net,web3
+      --syncmode snap
