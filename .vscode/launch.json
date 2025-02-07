@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-MaronnodesApplication<maronnodes>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.maronnodes.MaronnodesApplication",
+            "projectName": "maronnodes",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

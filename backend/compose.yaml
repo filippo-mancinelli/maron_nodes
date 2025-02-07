@@ -1,3 +1,5 @@
+# NOT needed anymore. These services are available at remote server.
+
 services:
   postgres:
     image: 'postgres:latest'
