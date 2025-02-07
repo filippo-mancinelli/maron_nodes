@@ -5,6 +5,8 @@ Infrastructure for automating the creation of servers on the cloud running block
 
 ## Backend
 - resources/application.properties
+- rabbitMQ running
+- postgres running
 
 ## Infrastructure
 - Terraform CLI
@@ -12,30 +14,8 @@ Infrastructure for automating the creation of servers on the cloud running block
 - .env
 
 ### Terraform CLI - Ubuntu
-Update and install necessary packages
-```
-sudo apt update && sudo apt install -y gnupg software-properties-common
-```
+refer to [Terraform docs](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) for instructions on installing the CLI.
 
-Add HashiCorp's official GPG key
-```
-curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
-```
-
-Add the HashiCorp repository
-```
-echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/- hashicorp.list
-```
-
-Install Terraform
-```
-sudo apt update && sudo apt install terraform -y
-```
-
-Verify installation
-```
-terraform -version
-``` 
 ### Hetzner Api Key
 refer to [Hetzner docs](https://docs.hetzner.cloud/#overview) for instructions on how to create an API key.
 
@@ -43,6 +23,15 @@ refer to [Hetzner docs](https://docs.hetzner.cloud/#overview) for instructions o
 Create a .env file in the root directory of the project with the following contents:
 ```
 HETZNER_API_KEY=<your api key>
+```
+# Introduction
+
+### Initialize terraform
+```
+terraform init
+```
+```
+terraform plan
 ```
 
 # Usage
