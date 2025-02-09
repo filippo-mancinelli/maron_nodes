@@ -1,6 +1,10 @@
 # WIP - maron_nodes
 Infrastructure for automating the creation of servers on the cloud running validator nodes.
 
+# Workflow Overview
+
+![img.png](charts/img.png)
+
 # Prerequisites
 
 ## Backend

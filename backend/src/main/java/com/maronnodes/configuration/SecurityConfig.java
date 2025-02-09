@@ -12,8 +12,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/**").permitAll() // Allow all requests
                 .requestMatchers("/mq/**").permitAll() // Allow all requests to /mq/*
-                .anyRequest().authenticated() // Require authentication for all other requests
+                //.anyRequest().authenticated() // Require authentication for all other requests
             )
             .csrf(csrf -> csrf.disable()); // Disable CSRF (enable in production)
 

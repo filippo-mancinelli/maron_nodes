@@ -1,4 +1,4 @@
-polygon_docker_image: "ethereum/client-go:latest"
-polygon_data_dir: "/mnt/polygon-data"
+polygon_docker_image: "0xpolygon/polygon-edge:latest"
+polygon_data_dir: "/data"
 polygon_rpc_port: 8545
 polygon_network: "--testnet"
