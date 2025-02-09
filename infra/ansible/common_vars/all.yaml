@@ -1,0 +1,4 @@
+polygon_data_dir: /data
+polygon_docker_image: "0xpolygon/polygon-edge:latest"
+polygon_network: "--network mumbai"
+polygon_rpc_port: 8545

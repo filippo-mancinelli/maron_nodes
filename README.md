@@ -1,6 +1,10 @@
 # maron_nodes
 Infrastructure for automating the creation of servers on the cloud running blockchain validator nodes.
 
+# Workflow Overview
+
+![img.png](charts/img.png)
+
 # Prerequisites
 
 ## Backend

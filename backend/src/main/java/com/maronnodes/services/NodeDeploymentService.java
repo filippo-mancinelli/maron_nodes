@@ -1,5 +1,6 @@
 package com.maronnodes.services;
 
+import java.time.Instant;
 import java.util.Map;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -11,11 +12,16 @@ public class NodeDeploymentService {
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void deployNode(String blockchainType) {
+    public void deployNode(String userId, String blockchainType) {
+        Map<String,String> message = Map.of(
+                "user_id", userId,
+                "blockchain_type", blockchainType,
+                "timestamp", Instant.now().toString()
+        );
+
         rabbitTemplate.convertAndSend(
-            "deployment_exchange", // Exchange name
-            "deployment_routing_key", // Routing key
-            Map.of("blockchain_type", blockchainType)
+                "deployment_queue",
+                message
         );
     }
 }

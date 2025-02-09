@@ -1,0 +1,6 @@
+---
+- name: Configure Polygon node
+  hosts: polygon_nodes
+  become: true
+  roles:
+    - polygon-node
