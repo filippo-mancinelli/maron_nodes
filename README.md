@@ -1,6 +1,5 @@
 # WIP - maron_nodes
 This project provides a way to automate the creation of servers on the cloud running validator nodes. This can be done in two ways:
-
 - Through a REST API call to the Backend
 - Manual triggering via the Terraform CLI
 
