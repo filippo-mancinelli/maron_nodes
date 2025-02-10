@@ -1,7 +1,6 @@
 terraform {
   cloud {
     organization = "maronnodes"
-
     workspaces {
       name = "HetznerRuns"
     }
@@ -14,6 +13,10 @@ terraform {
     hcp = {
       source  = "hashicorp/hcp"
       version = "0.91.0"
+    }
+    http = {
+      source = "hashicorp/http"
+      version = "3.4.5"
     }
   }
 }
@@ -44,6 +47,12 @@ variable "hcp_client_id" {
 variable "hcp_client_secret" {
   type        = string
   description = "HCP Client Secret"
+  sensitive   = true
+}
+
+variable "github_token" {
+  type        = string
+  description = "Github personal access token"
   sensitive   = true
 }
 
@@ -99,3 +108,30 @@ output "node_connection" {
   }
   sensitive = true
 }
+
+# Trigger Ansible Setup via GitHub Actions workflow
+data "http" "trigger_ansible" {
+  depends_on = [hcloud_server.polygon_node]
+
+  url    = "https://api.github.com/repos/filippo-mancinelli/maron_nodes/dispatches"
+  method = "POST"
+
+  request_headers = {
+    Accept        = "application/vnd.github+json"
+    Authorization = "Bearer ${var.github_token}"
+    Content-Type  = "application/json"
+  }
+
+  request_body = jsonencode({
+    event_type = "terraform-provisioned",
+    client_payload = {
+      server_ip   = hcloud_server.polygon_node.ipv4_address,
+      ssh_user    = "ansible",
+      ssh_key     = local.ansible_ssh_priv,
+      blockchain  = "polygon",
+      branch      = "develop"
+    }
+  })
+}
+
+
