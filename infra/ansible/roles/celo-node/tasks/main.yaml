@@ -1,0 +1,15 @@
+- name: Deploy Celo node container
+  docker_container:
+    name: celo-node
+    image: "{{ celo_docker_image }}"
+    state: started
+    restart_policy: always
+    volumes:
+      - "{{ celo_data_dir }}:/root/.celo"
+    ports:
+      - "8545:8545"
+    command: >
+      --syncmode full
+      --http
+      --http.addr 0.0.0.0
+      --http.api eth,net,web3

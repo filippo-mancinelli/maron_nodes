@@ -3,7 +3,7 @@ terraform {
     organization = "maronnodes"
 
     workspaces {
-      name = "HCPVaultSecretsLab"
+      name = "HetznerRuns"
     }
   }
   required_providers {
