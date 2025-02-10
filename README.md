@@ -20,6 +20,7 @@ The backend also provides a way to monitor the status of the servers, logs of th
 ## Infrastructure
 - Hetzner Api Key
 - Terraform CLI
+- Ansible CLI (ansible-playbook and ansible-galaxy)
 - Terraform Variables in cloud
 
 ### Hetzner Api Key
@@ -27,6 +28,12 @@ refer to [Hetzner docs](https://docs.hetzner.cloud/#overview) for instructions o
 
 ### Terraform CLI - Ubuntu
 refer to [Terraform docs](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) for instructions on installing the CLI.
+
+### Ansible CLI - Ubuntu
+install ansible cli (playbook and galaxy included)
+```
+sudo apt install ansible
+```
 
 ### Terraform Variables in cloud
 You need to create first a terraform workspace. Then you can create these variables in the workspace and refer to it in the terraform code:

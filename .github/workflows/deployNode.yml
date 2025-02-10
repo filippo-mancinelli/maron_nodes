@@ -1,0 +1,61 @@
+name: Node Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      blockchain_type:
+        description: 'Blockchain type'
+        required: true
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    
+    - name: Terraform Apply
+      uses: hashicorp/terraform-github-actions@v2
+      with:
+        tf_actions_version: 1.6.0
+        tf_actions_subcommand: 'apply'
+        tf_actions_working_dir: 'terraform/hetzner'
+      env:
+        TF_CLOUD_ORGANIZATION: maronnodes
+        TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
+
+  ansible:
+    needs: terraform
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Get Terraform Output
+      id: tf-output
+      run: |
+        TF_OUTPUT=$(terraform -chdir=terraform/hetzner output -json node_connection)
+        echo "TF_OUTPUT_JSON<<EOF" >> $GITHUB_ENV
+        echo "$TF_OUTPUT" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    - name: Setup Ansible
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ansible
+        ansible-galaxy collection install community.docker
+
+    - name: Run Ansible Playbook
+      run: |
+        echo "${{ env.TF_OUTPUT_JSON }}" > ansible/inventory.json
+        jq -r '@sh "echo \(.ssh_key) > ansible/ssh_key && chmod 600 ansible/ssh_key"' < ansible/inventory.json | bash
+        
+        ANSIBLE_SSH_ARGS='-o StrictHostKeyChecking=no' \
+        ansible-playbook \
+          -i ansible/inventory.ini \
+          -u $(jq -r .ssh_user ansible/inventory.json) \
+          --private-key ansible/ssh_key \
+          -e "@ansible/common_vars/all.yaml" \
+          -e "blockchain_type=${{ inputs.blockchain_type }}" \
+          ansible/site.yml
