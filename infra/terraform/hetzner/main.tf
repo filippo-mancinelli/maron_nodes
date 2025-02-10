@@ -90,7 +90,7 @@ output "server_ip" {
   value = hcloud_server.polygon_node.ipv4_address
 }
 
-# After the server is created succesfully, start the Ansible playbook inside of it.
+# After the server is created succesfully, start the Ansible playbook.
 resource "null_resource" "ansible_provisioner" {
   depends_on = [hcloud_server.polygon_node]
 
@@ -100,21 +100,23 @@ resource "null_resource" "ansible_provisioner" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      echo "${local.ansible_ssh_priv}" > ansible_ssh_key &&
-      chmod 600 ansible_ssh_key &&
+      echo "${local.ansible_ssh_priv}" > ../../ansible/ansible_ssh_key &&
+      chmod 600 ../ansible/ansible_ssh_key &&
+      echo "[polygon_nodes]" > ../ansible/inventory.ini &&
+      echo "${hcloud_server.polygon_node.ipv4_address} ansible_user=ansible" >> ../ansible/inventory.ini &&
+      cd ../ansible &&
+      ansible-galaxy collection install community.docker &&
       ansible-playbook \
-        -i '${hcloud_server.polygon_node.ipv4_address},' \
+        -i inventory.ini \
         -u ansible \
         --private-key ansible_ssh_key \
-        --extra-vars "polygon_data_dir=/data polygon_docker_image=your_image polygon_network=your_network polygon_rpc_port=your_port" \
-        your_playbook.yml
+        site.yml
     EOT
   }
 
-  # Clean up the SSH key after completion
   provisioner "local-exec" {
     when    = destroy
-    command = "rm -f ansible_ssh_key"
+    command = "rm -f ../ansible/ansible_ssh_key"
   }
 }
 

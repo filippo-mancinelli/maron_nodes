@@ -1,4 +1,4 @@
-# maron_nodes
+# WIP - maron_nodes
 This project provides a way to automate the creation of servers on the cloud running validator nodes. This can be done in two ways:
 
 - Through a REST API call to the Backend
@@ -55,9 +55,6 @@ Also you need to remove the "cloud" block on each main.tf:
   } 
 ```
 
-### Hetzner Api Key
-refer to [Hetzner docs](https://docs.hetzner.cloud/#overview) for instructions on how to create an API key.
-
 # Manually triggering the creation of a node through terraform CLI
 
 ### Move to the chosen cloud provider directory
@@ -78,8 +75,11 @@ terraform init
 ```
 terraform plan
 ```
+```
+terraform apply
+```
 
 # Usage
 
-## Create a new node
+## Triggering the creation of a node through Rest API
 ... TBD
