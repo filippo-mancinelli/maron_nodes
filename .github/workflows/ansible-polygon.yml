@@ -1,0 +1,45 @@
+name: Ansible Polygon
+
+on:
+  repository_dispatch:
+    types: [terraform-provisioned]
+  workflow_dispatch: {}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    if: github.ref == format('refs/heads/%s', github.event.client_payload.branch)
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        ref: ${{ github.event.client_payload.branch }}
+
+      - name: Parse client payload
+        id: payload
+        run: |
+          echo "SERVER_IP=$(echo '${{ github.event.client_payload.server_ip }}')" >> $GITHUB_ENV
+          echo "SSH_USER=$(echo '${{ github.event.client_payload.ssh_user }}')" >> $GITHUB_ENV
+          echo "SSH_KEY=$(echo '${{ github.event.client_payload.ssh_key }}')" >> $GITHUB_ENV
+          echo "BLOCKCHAIN=$(echo '${{ github.event.client_payload.blockchain }}')" >> $GITHUB_ENV
+
+      - name: Write SSH key
+        run: |
+          echo "$SSH_KEY" > ansible/ssh_key
+          chmod 600 ansible/ssh_key
+
+      - name: Setup Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+          ansible-galaxy collection install community.docker
+
+      - name: Run Ansible playbook
+        run: |
+          ANSIBLE_SSH_ARGS='-o StrictHostKeyChecking=no' \
+          ansible-playbook \
+            -i "$SERVER_IP," \
+            -u "$SSH_USER" \
+            --private-key ansible/ssh_key \
+            -e "@ansible/common_vars/all.yaml" \
+            -e "blockchain_type=$BLOCKCHAIN" \
+            infra/ansible/site.yml
