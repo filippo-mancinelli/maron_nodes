@@ -1,7 +1,6 @@
 terraform {
   cloud {
     organization = "maronnodes"
-
     workspaces {
       name = "HetznerRuns"
     }
@@ -15,12 +14,16 @@ terraform {
       source  = "hashicorp/hcp"
       version = "0.91.0"
     }
+    http = {
+      source = "hashicorp/http"
+      version = "3.4.5"
+    }
   }
 }
 
 # Fetch SSH keys from HCP Vault
 data "hcp_vault_secrets_app" "ansible_ssh_keys" {
-  app_name = "maronnodes"  # Replace with your HCP Vault app name
+  app_name = "maronnodes"
 }
 
 # Parse the SSH keys from the fetched secrets
@@ -44,6 +47,12 @@ variable "hcp_client_id" {
 variable "hcp_client_secret" {
   type        = string
   description = "HCP Client Secret"
+  sensitive   = true
+}
+
+variable "github_token" {
+  type        = string
+  description = "Github personal access token"
   sensitive   = true
 }
 
@@ -85,44 +94,44 @@ resource "hcloud_server" "polygon_node" {
   EOT
 }
 
-# Output server IP for Ansible
+# Output server IP
 output "server_ip" {
   value = hcloud_server.polygon_node.ipv4_address
 }
 
-# After the server is created succesfully, start the Ansible playbook.
-resource "null_resource" "ansible_provisioner" {
+output "node_connection" {
+  value = {
+    ip          = hcloud_server.polygon_node.ipv4_address
+    ssh_user    = "ansible"
+    ssh_key     = local.ansible_ssh_priv
+    blockchain  = "polygon"
+  }
+  sensitive = true
+}
+
+# Trigger Ansible Setup via GitHub Actions workflow
+data "http" "trigger_ansible" {
   depends_on = [hcloud_server.polygon_node]
 
-  triggers = {
-    always_run = timestamp()
+  url    = "https://api.github.com/repos/filippo-mancinelli/maron_nodes/dispatches"
+  method = "POST"
+
+  request_headers = {
+    Accept        = "application/vnd.github+json"
+    Authorization = "Bearer ${var.github_token}"
+    Content-Type  = "application/json"
   }
 
-  provisioner "local-exec" {
-    command = <<-EOT
-      echo "${local.ansible_ssh_priv}" > ../../ansible/ansible_ssh_key &&
-      chmod 600 ../ansible/ansible_ssh_key &&
-      echo "[polygon_nodes]" > ../ansible/inventory.ini &&
-      echo "${hcloud_server.polygon_node.ipv4_address} ansible_user=ansible" >> ../ansible/inventory.ini &&
-      cd ../ansible &&
-      ansible-galaxy collection install community.docker &&
-      ansible-playbook \
-        -i inventory.ini \
-        -u ansible \
-        --private-key ansible_ssh_key \
-        site.yml
-    EOT
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "rm -f ../ansible/ansible_ssh_key"
-  }
+  request_body = jsonencode({
+    event_type = "terraform-provisioned",
+    client_payload = {
+      server_ip   = hcloud_server.polygon_node.ipv4_address,
+      ssh_user    = "ansible",
+      ssh_key     = local.ansible_ssh_priv,
+      blockchain  = "polygon",
+      branch      = "develop"
+    }
+  })
 }
 
-output "inventory" {
-  value = <<-EOT
-    [polygon_nodes]
-    ${hcloud_server.polygon_node.ipv4_address}
-  EOT
-}
+
