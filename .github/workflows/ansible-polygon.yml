@@ -38,7 +38,8 @@ jobs:
 
       - name: Validate SSH Key Format
         run: |
-          echo "${{ secrets.ANSIBLE_SSH_PRIV }}" > ./infra/ansible/.ansible_key
+          echo -e "${{ secrets.ANSIBLE_SSH_PRIV }}" > ./infra/ansible/.ansible_key
+
           chmod 600 ./infra/ansible/.ansible_key
           ssh-keygen -y -f ./infra/ansible/.ansible_key || (echo "Invalid SSH key"; exit 1)
 
