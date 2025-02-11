@@ -31,26 +31,21 @@ jobs:
           echo "SSH_USER=${{ github.event.inputs.ssh_user }}" >> $GITHUB_ENV
           echo "BLOCKCHAIN=${{ github.event.inputs.blockchain }}" >> $GITHUB_ENV
 
-      - name: Write SSH key
-        run: |
-          echo "${{ secrets.ANSIBLE_SSH_PRIV }}" > ansible/ssh_key
-          chmod 600 ansible/ssh_key
-
       - name: Install Ansible
-        uses: alex-oleshkevich/setup-ansible@v1
+        uses: alex-oleshkevich/setup-ansible@v1.01
         with:
           version: "9.3.0"
 
-      - name: Print Ansible version
-        run: ansible-playbook --version
-
       - name: Run Ansible playbook
-        run: |
-          ANSIBLE_SSH_ARGS='-o StrictHostKeyChecking=no' \
-          ansible-playbook \
-            -i "$SERVER_IP," \
-            -u "$SSH_USER" \
-            --private-key ansible/ssh_key \
-            -e "@ansible/common_vars/all.yaml" \
-            -e "blockchain_type=$BLOCKCHAIN" \
-            infra/ansible/site.yml
+        uses: dawidd6/action-ansible-playbook@v3
+        with:
+          playbook: infra/ansible/site.yml
+          directory: ./
+          key: ${{ secrets.ANSIBLE_SSH_PRIV }}
+          inventory: |
+            [all]
+            ${{ env.SERVER_IP }} ansible_user=${{ env.SSH_USER }}
+          options: |
+            --extra-vars "blockchain_type=${{ env.BLOCKCHAIN }}"
+            --extra-vars "@ansible/common_vars/all.yaml"
+            --verbose
