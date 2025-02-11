@@ -9,9 +9,6 @@ on:
       ssh_user:
         required: true
         type: string
-      ssh_key:
-        required: true
-        type: string
       blockchain:
         required: true
         type: string
@@ -32,12 +29,11 @@ jobs:
         run: |
           echo "SERVER_IP=${{ github.event.inputs.server_ip }}" >> $GITHUB_ENV
           echo "SSH_USER=${{ github.event.inputs.ssh_user }}" >> $GITHUB_ENV
-          echo "SSH_KEY=${{ github.event.inputs.ssh_key }}" >> $GITHUB_ENV
           echo "BLOCKCHAIN=${{ github.event.inputs.blockchain }}" >> $GITHUB_ENV
 
       - name: Write SSH key
         run: |
-          echo "$SSH_KEY" > ansible/ssh_key
+          echo "${{ secrets.ANSIBLE_SSH_PRIV }}" > ansible/ssh_key
           chmod 600 ansible/ssh_key
 
       - name: Setup Ansible
