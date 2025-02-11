@@ -32,10 +32,14 @@ jobs:
           echo "BLOCKCHAIN=${{ github.event.inputs.blockchain }}" >> $GITHUB_ENV
 
       - name: Install Ansible
-        uses: alex-oleshkevich/setup-ansible@v1.01
+        uses: alex-oleshkevich/setup-ansible@1.01
         with:
           version: "9.3.0"
-
+          
+      - name: Check Ansible version
+        run: |
+          run: ansible-playbook --version
+  
       - name: Run Ansible playbook
         uses: dawidd6/action-ansible-playbook@v3
         with:
