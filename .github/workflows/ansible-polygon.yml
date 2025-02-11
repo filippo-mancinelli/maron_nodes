@@ -1,27 +1,39 @@
 name: Ansible Polygon
 
 on:
-  repository_dispatch:
-    types: [terraform-provisioned]
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      server_ip:
+        required: true
+        type: string
+      ssh_user:
+        required: true
+        type: string
+      ssh_key:
+        required: true
+        type: string
+      blockchain:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
 
 jobs:
   setup:
     runs-on: ubuntu-latest
-    if: github.ref == format('refs/heads/%s', github.event.client_payload.branch)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.client_payload.branch }}
+          ref: ${{ github.event.inputs.branch }}
 
-      - name: Parse client payload
-        id: payload
+      - name: Parse inputs
         run: |
-          echo "SERVER_IP=$(echo '${{ github.event.client_payload.server_ip }}')" >> $GITHUB_ENV
-          echo "SSH_USER=$(echo '${{ github.event.client_payload.ssh_user }}')" >> $GITHUB_ENV
-          echo "SSH_KEY=$(echo '${{ github.event.client_payload.ssh_key }}')" >> $GITHUB_ENV
-          echo "BLOCKCHAIN=$(echo '${{ github.event.client_payload.blockchain }}')" >> $GITHUB_ENV
+          echo "SERVER_IP=${{ github.event.inputs.server_ip }}" >> $GITHUB_ENV
+          echo "SSH_USER=${{ github.event.inputs.ssh_user }}" >> $GITHUB_ENV
+          echo "SSH_KEY=${{ github.event.inputs.ssh_key }}" >> $GITHUB_ENV
+          echo "BLOCKCHAIN=${{ github.event.inputs.blockchain }}" >> $GITHUB_ENV
 
       - name: Write SSH key
         run: |
