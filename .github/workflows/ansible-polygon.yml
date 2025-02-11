@@ -34,7 +34,7 @@ jobs:
       - name: Install Ansible
         uses: alex-oleshkevich/setup-ansible@v1.0.1
         with:
-          version: "2.15.13"
+          version: "9.3.0"
 
       - name: Check Ansible version
         run: ansible-playbook --version
