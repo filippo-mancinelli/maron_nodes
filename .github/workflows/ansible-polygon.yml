@@ -42,13 +42,12 @@ jobs:
       - name: Run Ansible playbook
         uses: dawidd6/action-ansible-playbook@v3
         with:
-          playbook: infra/ansible/site.yml
-          directory: ./
+          playbook: site.yaml
+          directory: ./infra/ansible
           key: ${{ secrets.ANSIBLE_SSH_PRIV }}
           inventory: |
-            [all]
+            [polygon_nodes]
             ${{ env.SERVER_IP }} ansible_user=${{ env.SSH_USER }}
           options: |
             --extra-vars "blockchain_type=${{ env.BLOCKCHAIN }}"
-            --extra-vars "@ansible/common_vars/all.yaml"
             --verbose
