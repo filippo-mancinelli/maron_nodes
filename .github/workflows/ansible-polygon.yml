@@ -36,11 +36,13 @@ jobs:
           echo "${{ secrets.ANSIBLE_SSH_PRIV }}" > ansible/ssh_key
           chmod 600 ansible/ssh_key
 
-      - name: Setup Ansible
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ansible
-          ansible-galaxy collection install community.docker
+      - name: Install Ansible
+        uses: alex-oleshkevich/setup-ansible@v1
+        with:
+          version: "9.3.0"
+
+      - name: Print Ansible version
+        run: ansible-playbook --version
 
       - name: Run Ansible playbook
         run: |
