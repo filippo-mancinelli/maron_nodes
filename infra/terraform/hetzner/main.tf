@@ -15,7 +15,7 @@ terraform {
       version = "0.91.0"
     }
     http = {
-      source = "hashicorp/http"
+      source  = "hashicorp/http"
       version = "3.4.5"
     }
   }
@@ -52,7 +52,7 @@ variable "hcp_client_secret" {
 
 variable "github_token" {
   type        = string
-  description = "Github personal access token"
+  description = "GitHub personal access token"
   sensitive   = true
 }
 
@@ -101,10 +101,10 @@ output "server_ip" {
 
 output "node_connection" {
   value = {
-    ip          = hcloud_server.polygon_node.ipv4_address
-    ssh_user    = "ansible"
-    ssh_key     = local.ansible_ssh_priv
-    blockchain  = "polygon"
+    ip         = hcloud_server.polygon_node.ipv4_address
+    ssh_user   = "ansible"
+    ssh_key    = local.ansible_ssh_priv
+    blockchain = "polygon"
   }
   sensitive = true
 }
@@ -113,25 +113,22 @@ output "node_connection" {
 data "http" "trigger_ansible" {
   depends_on = [hcloud_server.polygon_node]
 
-  url    = "https://api.github.com/repos/filippo-mancinelli/maron_nodes/dispatches"
+  url    = "https://api.github.com/repos/filippo-mancinelli/maron_nodes/actions/workflows/ansible-polygon.yml/dispatches"
   method = "POST"
 
   request_headers = {
-    Accept        = "application/vnd.github+json"
+    Accept        = "application/json"
     Authorization = "Bearer ${var.github_token}"
     Content-Type  = "application/json"
   }
 
   request_body = jsonencode({
-    event_type = "terraform-provisioned",
-    client_payload = {
-      server_ip   = hcloud_server.polygon_node.ipv4_address,
-      ssh_user    = "ansible",
-      ssh_key     = local.ansible_ssh_priv,
-      blockchain  = "polygon",
-      branch      = "develop"
+    ref = "dev",
+    inputs = {
+      server_ip  = hcloud_server.polygon_node.ipv4_address
+      ssh_user   = "ansible"
+      blockchain = "polygon"
+      branch     = "dev"
     }
   })
 }
-
-

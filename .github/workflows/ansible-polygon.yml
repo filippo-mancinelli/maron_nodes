@@ -36,8 +36,11 @@ jobs:
         with:
           version: "9.3.0"
 
-      - name: Check Ansible version
-        run: ansible-playbook --version
+      - name: Validate SSH Key Format
+        run: |
+          echo "${{ secrets.ANSIBLE_SSH_PRIV }}" > ./infra/ansible/.ansible_key
+          chmod 600 ./infra/ansible/.ansible_key
+          ssh-keygen -y -f ./infra/ansible/.ansible_key || (echo "Invalid SSH key"; exit 1)
 
       - name: Run Ansible playbook
         uses: dawidd6/action-ansible-playbook@v3
@@ -51,3 +54,4 @@ jobs:
           options: |
             --extra-vars "blockchain_type=${{ env.BLOCKCHAIN }}"
             --verbose
+            --private-key=.ansible_key
