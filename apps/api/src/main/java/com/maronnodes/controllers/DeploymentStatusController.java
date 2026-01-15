@@ -2,16 +2,16 @@ package com.maronnodes.controllers;
 
 import com.maronnodes.models.DeploymentStatus;
 import com.maronnodes.repository.DeploymentRepository;
+import com.maronnodes.services.NodeDeploymentService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/api/v1")
 public class DeploymentStatusController {
 
     @Autowired
@@ -20,8 +20,21 @@ public class DeploymentStatusController {
     @Autowired
     private DeploymentRepository repository;
 
+    @Autowired
+    private FakeDeploymentService fakeDeploymentService;
+
+    // DTO for the request body
+    public record DeploymentRequest(String userId, String blockchainType) {}
+
+    @PostMapping("/deployments")
+    public void triggerDeployment(@RequestBody DeploymentRequest request) {
+        // For now, we only use the fake service as requested
+        fakeDeploymentService.deployFakeNode(request.userId(), request.blockchainType());
+    }
+
     @RabbitListener(queues = "deployment_status")
     public void handleStatusUpdate(String status) {
+        // This will be implemented later to push status to WebSocket
     }
 
     @GetMapping("/deployments/{id}")

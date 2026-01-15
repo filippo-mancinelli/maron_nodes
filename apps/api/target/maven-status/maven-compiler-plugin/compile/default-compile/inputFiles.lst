@@ -1,0 +1,13 @@
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/MaronnodesApplication.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/configuration/AsyncConfig.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/configuration/RabbitMQConfig.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/configuration/SecurityConfig.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/configuration/WebSocketConfig.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/controllers/DeploymentStatusController.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/controllers/RabbitMQController.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/models/DeploymentStatus.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/repository/DeploymentRepository.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/services/FakeDeploymentService.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/services/NodeDeploymentService.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/services/RabbitMQConsumer.java
+/workspaces/maron_nodes/apps/api/src/main/java/com/maronnodes/services/RabbitMQProducer.java

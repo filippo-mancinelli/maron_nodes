@@ -27,9 +27,6 @@ export default function HomePage() {
             <Link href="#features" className="text-sm font-medium hover:text-primary transition-colors">
               Features
             </Link>
-            <Link href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">
-              Pricing
-            </Link>
             <Link href="#networks" className="text-sm font-medium hover:text-primary transition-colors">
               Networks
             </Link>
@@ -39,7 +36,7 @@ export default function HomePage() {
           </nav>
           <div className="flex items-center gap-4">
             <Button variant="ghost" asChild>
-              <Link href="/login">Login</Link>
+              <Link href="/dashboard">Login</Link>
             </Button>
             <Button asChild>
               <Link href="/register">Get Started</Link>
@@ -184,149 +181,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section id="pricing" className="border-y bg-muted/30 py-24">
-          <div className="container">
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Simple, transparent pricing
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Choose the plan that fits your needs. Upgrade or downgrade anytime.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {/* Starter */}
-              <Card className="relative">
-                <CardHeader>
-                  <CardTitle>Starter</CardTitle>
-                  <CardDescription>Perfect for beginners</CardDescription>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold">€9.99</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      1 blockchain node
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      2 vCPU, 4GB RAM
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      40GB SSD storage
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Basic monitoring
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Email support
-                    </li>
-                  </ul>
-                  <Button className="w-full" asChild>
-                    <Link href="/register">Get Started</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Pro */}
-              <Card className="relative border-primary shadow-lg scale-105">
-                <div className="absolute -top-4 left-0 right-0 mx-auto w-fit rounded-full bg-primary px-4 py-1 text-xs text-primary-foreground">
-                  Most Popular
-                </div>
-                <CardHeader>
-                  <CardTitle>Pro</CardTitle>
-                  <CardDescription>For serious validators</CardDescription>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold">€49.99</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Up to 5 nodes
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      4 vCPU, 8GB RAM each
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      80GB SSD storage
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Advanced monitoring
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Priority support
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Custom alerts
-                    </li>
-                  </ul>
-                  <Button className="w-full" asChild>
-                    <Link href="/register">Get Started</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Enterprise */}
-              <Card className="relative">
-                <CardHeader>
-                  <CardTitle>Enterprise</CardTitle>
-                  <CardDescription>For organizations</CardDescription>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold">€199.99</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Up to 20 nodes
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Custom resources
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Dedicated support
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      SLA guarantee
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Custom integrations
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      Team management
-                    </li>
-                  </ul>
-                  <Button className="w-full" asChild>
-                    <Link href="/register">Contact Sales</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
         {/* CTA Section */}
         <section className="container py-24">
           <Card className="bg-primary text-primary-foreground">
@@ -361,7 +215,6 @@ export default function HomePage() {
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="#features" className="hover:text-foreground">Features</Link></li>
-                <li><Link href="#pricing" className="hover:text-foreground">Pricing</Link></li>
                 <li><Link href="#networks" className="hover:text-foreground">Networks</Link></li>
                 <li><Link href="/docs" className="hover:text-foreground">Documentation</Link></li>
               </ul>
