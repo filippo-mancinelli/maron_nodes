@@ -1,0 +1,17 @@
+com\maronnodes\configuration\AsyncConfig.class
+com\maronnodes\configuration\RabbitMQConfig.class
+com\maronnodes\configuration\WebSocketConfig.class
+com\maronnodes\models\DeploymentStatus$Status.class
+com\maronnodes\controllers\RabbitMQController.class
+com\maronnodes\models\DeploymentStatus.class
+com\maronnodes\controllers\DeploymentStatusController$DeploymentRequest.class
+com\maronnodes\services\FakeDeploymentService.class
+com\maronnodes\repository\DeploymentRepository.class
+com\maronnodes\services\FakeDeploymentService$DeploymentStatusUpdate.class
+com\maronnodes\configuration\SecurityConfig.class
+com\maronnodes\services\NodeDeploymentService.class
+com\maronnodes\MaronnodesApplication.class
+com\maronnodes\controllers\DeploymentStatusController.class
+com\maronnodes\services\RabbitMQProducer.class
+com\maronnodes\controllers\DeploymentStatusController$DeploymentNotFoundException.class
+com\maronnodes\services\RabbitMQConsumer.class

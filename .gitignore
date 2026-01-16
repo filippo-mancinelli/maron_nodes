@@ -55,3 +55,8 @@ coverage/
 
 # Misc
 *.pem
+
+
+
+.nx/cache
+.nx/workspace-data

@@ -3,6 +3,7 @@ package com.maronnodes.controllers;
 import com.maronnodes.models.DeploymentStatus;
 import com.maronnodes.repository.DeploymentRepository;
 import com.maronnodes.services.NodeDeploymentService;
+import com.maronnodes.services.FakeDeploymentService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

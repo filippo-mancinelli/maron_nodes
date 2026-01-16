@@ -1,8 +1,14 @@
 package com.maronnodes.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.Instant;
 
+@Entity
+@Table(name = "deployment_status")
 public class DeploymentStatus {
+    @Id
     private String deploymentId;
     private String userId;
     private String blockchainType;
