@@ -13,7 +13,11 @@
       "Bash(npx nx graph:*)",
       "Bash(npx nx run:*)",
       "Bash(taskkill:*)",
-      "Bash(mvn clean compile:*)"
+      "Bash(mvn clean compile:*)",
+      "Bash(pnpm dev:api:*)",
+      "Bash(npm install:*)",
+      "Bash(npx --yes npm install:*)",
+      "Bash(npx next:*)"
     ]
   }
 }

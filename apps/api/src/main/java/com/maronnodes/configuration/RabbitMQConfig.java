@@ -16,6 +16,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue deploymentStatusQueue() {
+        return new Queue("deployment_status", true);
+    }
+
+    @Bean
     public DirectExchange deploymentExchange() {
         return new DirectExchange("deployment_exchange");
     }

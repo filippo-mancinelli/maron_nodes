@@ -10,32 +10,48 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, Package2 } from "lucide-react";
+import {
+  Menu,
+  LayoutDashboard,
+  Server,
+  Settings,
+  CreditCard,
+  HelpCircle,
+  Zap,
+  Plus
+} from "lucide-react";
 import { useWebSocket } from "@/hooks/use-web-socket";
+import { DeployNodeDialog } from "@/components/deploy-node-dialog";
 
 const navLinks = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/nodes", label: "Nodes" },
-  { href: "/settings", label: "Settings" },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/nodes", label: "My Nodes", icon: Server },
+  { href: "/pricing", label: "Pricing", icon: CreditCard },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 function Nav() {
   const pathname = usePathname();
   return (
-    <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-      {navLinks.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${
-            pathname === link.href
-              ? "bg-muted text-primary"
-              : "text-muted-foreground"
-          }`}
-        >
-          {link.label}
-        </Link>
-      ))}
+    <nav className="flex flex-col gap-1 px-3">
+      {navLinks.map((link) => {
+        const Icon = link.icon;
+        const isActive = pathname === link.href;
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
+              isActive
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
+          >
+            <Icon className="h-4 w-4" />
+            {link.label}
+          </Link>
+        );
+      })}
     </nav>
   );
 }
@@ -44,30 +60,32 @@ function MobileNav() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+        <Button variant="ghost" size="icon" className="shrink-0 md:hidden">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left">
-        <nav className="grid gap-6 text-lg font-medium">
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-lg font-semibold"
-          >
-            <Package2 className="h-6 w-6" />
-            <span>Maron Nodes</span>
-          </Link>
-          {navLinks.map((link) => (
+      <SheetContent side="left" className="w-72 p-0">
+        <div className="flex h-full flex-col">
+          <div className="flex h-16 items-center gap-2 border-b px-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
+              <Zap className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-lg font-bold">Maron Nodes</span>
+          </div>
+          <div className="flex-1 py-4">
+            <Nav />
+          </div>
+          <div className="border-t p-4">
             <Link
-              key={link.href}
-              href={link.href}
-              className="text-muted-foreground hover:text-foreground"
+              href="/help"
+              className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
             >
-              {link.label}
+              <HelpCircle className="h-4 w-4" />
+              Help & Support
             </Link>
-          ))}
-        </nav>
+          </div>
+        </div>
       </SheetContent>
     </Sheet>
   );
@@ -75,16 +93,30 @@ function MobileNav() {
 
 function DesktopSidebar() {
   return (
-    <aside className="hidden border-r bg-muted/40 md:block">
-      <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
-            <Package2 className="h-6 w-6" />
-            <span>Maron Nodes</span>
-          </Link>
-        </div>
-        <div className="flex-1">
+    <aside className="hidden w-64 flex-col border-r bg-card md:flex">
+      <div className="flex h-16 items-center gap-2 border-b px-6">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
+            <Zap className="h-4 w-4 text-white" />
+          </div>
+          <span className="text-lg font-bold">Maron Nodes</span>
+        </Link>
+      </div>
+      <div className="flex flex-1 flex-col justify-between py-4">
+        <div className="space-y-4">
+          <div className="px-3">
+            <DeployNodeDialog />
+          </div>
           <Nav />
+        </div>
+        <div className="px-3">
+          <Link
+            href="/help"
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <HelpCircle className="h-4 w-4" />
+            Help & Support
+          </Link>
         </div>
       </div>
     </aside>
@@ -96,19 +128,24 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Use the WebSocket hook here to connect for the logged-in user
-  useWebSocket("user123"); // Hardcoded userId for now
+  useWebSocket("user123");
 
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="flex min-h-screen bg-background">
       <DesktopSidebar />
-      <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+      <div className="flex flex-1 flex-col">
+        <header className="flex h-16 items-center gap-4 border-b bg-card px-4 md:px-6">
           <MobileNav />
-          <div className="w-full flex-1" />
+          <div className="flex flex-1 items-center gap-4 md:hidden">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
+              <Zap className="h-4 w-4 text-white" />
+            </div>
+            <span className="font-bold">Maron Nodes</span>
+          </div>
+          <div className="hidden flex-1 md:block" />
           <UserNav />
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+        <main className="flex-1 overflow-auto p-4 md:p-6">
           {children}
         </main>
       </div>
