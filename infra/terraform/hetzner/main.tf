@@ -122,6 +122,7 @@ data "http" "trigger_ansible" {
     Content-Type  = "application/json"
   }
 
+
   request_body = jsonencode({
     event_type = "terraform-provisioned",
     client_payload = {
@@ -132,6 +133,10 @@ data "http" "trigger_ansible" {
       branch      = "develop"
     }
   })
+}
+
+output "trigger_response" {
+  value = data.http.trigger_ansible.response_body
 }
 
 

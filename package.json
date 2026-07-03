@@ -1,0 +1,54 @@
+{
+  "name": "maron-nodes-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Maron Nodes - Blockchain Node-as-a-Service Platform",
+  "keywords": [
+    "blockchain",
+    "nodes",
+    "saas",
+    "infrastructure",
+    "web3"
+  ],
+  "author": "Maron Nodes Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "nx run web:dev",
+    "dev:api": "nx run api:dev",
+    "dev:all": "nx run-many -t dev -p web api --parallel",
+    "build": "nx run-many -t build -p web api",
+    "build:web": "nx run web:build",
+    "build:api": "nx run api:build",
+    "build:libs": "nx run-many -t build -p shared-types api-client",
+    "lint": "nx run-many -t lint",
+    "lint:fix": "nx run-many -t lint --fix",
+    "typecheck": "nx run-many -t typecheck",
+    "test": "nx run-many -t test",
+    "test:watch": "nx run-many -t test --watch",
+    "test:web": "nx run web:test",
+    "test:api": "nx run api:test",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,css,scss}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json,css,scss}\"",
+    "clean": "nx run-many -t clean && rm -rf node_modules .nx",
+    "docker:up": "nx run api:docker:up",
+    "docker:down": "nx run api:docker:down",
+    "graph": "nx graph",
+    "affected": "nx affected",
+    "affected:build": "nx affected -t build",
+    "affected:test": "nx affected -t test",
+    "setup": "pnpm install && nx run-many -t build"
+  },
+  "devDependencies": {
+    "@jnxplus/nx-maven": "^2.1.0",
+    "@nx/js": "19.8.14",
+    "@nx/workspace": "19.8.14",
+    "nx": "22.3.3",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  }
+}

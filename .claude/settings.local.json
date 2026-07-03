@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add:*)",
+      "Bash(pnpm install:*)",
+      "Bash(npx nx@latest init --interactive=false)",
+      "Bash(./mvnw clean:*)",
+      "Bash(java:*)",
+      "Bash(npx nx generate:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(find:*)",
+      "Bash(npx nx show projects)",
+      "Bash(npx nx graph:*)",
+      "Bash(npx nx run:*)",
+      "Bash(taskkill:*)",
+      "Bash(mvn clean compile:*)",
+      "Bash(pnpm dev:api:*)",
+      "Bash(npm install:*)",
+      "Bash(npx --yes npm install:*)",
+      "Bash(npx next:*)"
+    ]
+  }
+}
