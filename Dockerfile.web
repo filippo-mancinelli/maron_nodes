@@ -1,12 +1,13 @@
 # syntax=docker/dockerfile:1
 
-# Build context: apps/web (the app is self-contained — no workspace/libs imports).
-# Produces a lean image from Next.js standalone output.
+# Build context: repository root (Dokploy convention — see Dockerfile.web / DockerfileFrontend
+# in the other monorepo services). Builds the self-contained Next.js app in apps/web
+# (no workspace/libs imports) into a lean standalone runtime image.
 
 # ---- deps ----
 FROM node:20-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY apps/web/package.json apps/web/package-lock.json ./
 RUN npm ci
 
 # ---- builder ----
@@ -14,7 +15,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY apps/web ./
 RUN npm run build
 
 # ---- runner ----
@@ -28,7 +29,6 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
 
-# Next.js standalone server + assets
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static

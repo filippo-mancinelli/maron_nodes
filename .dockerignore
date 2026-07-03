@@ -1,0 +1,19 @@
+# Root build context .dockerignore for Dockerfile.web (context = repo root).
+# Keep the context small: only apps/web source is COPYed into the image.
+**/node_modules
+**/.next
+**/.turbo
+.git
+.github
+.omc
+.claude
+apps/api
+infra
+charts
+dist
+static
+graph.html
+**/*.log
+**/.env
+**/.env.local
+**/.env.*.local
