@@ -1,481 +1,685 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Zap,
-  Shield,
-  TrendingUp,
-  Globe,
-  CheckCircle2,
-  ArrowRight,
-  Server,
-  Cpu,
-  Network,
-} from "lucide-react";
+import { Manrope, JetBrains_Mono } from "next/font/google";
 
-const networks = [
-  "Ethereum",
-  "Polygon",
-  "Avalanche",
-  "Arbitrum",
-  "Optimism",
-  "Base",
-  "Solana",
-  "Celo",
-  "Fantom",
-  "BNB Chain",
-  "Cosmos",
-  "Near",
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-manrope",
+});
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-jetbrains",
+});
+
+const LOGS = [
+  { time: "14:20:36", color: "oklch(0.85 0.005 40)", text: "terraform apply — 4 resources added" },
+  { time: "14:21:04", color: "oklch(0.85 0.005 40)", text: "Provisioning server on Hetzner…" },
+  { time: "14:22:41", color: "oklch(0.72 0.12 155)", text: "Node reachable at 65.108.4.21" },
+  { time: "14:24:19", color: "oklch(0.85 0.005 40)", text: "ansible-playbook validator.yml — 31 tasks" },
+  { time: "14:28:02", color: "oklch(0.72 0.12 155)", text: "Validator syncing — head 21,004,113" },
 ];
 
-const features = [
+const STEPS = [
   {
-    icon: Zap,
-    title: "One-Click Deploy",
-    description:
-      "Deploy your first node in under 2 minutes with our intuitive interface. No DevOps knowledge required.",
+    n: "01",
+    title: "Scegli chain e provider",
+    body: "Ethereum, Solana o Polkadot; server Hetzner o Contabo nella regione che preferisci. Le credenziali cloud restano tue.",
   },
   {
-    icon: Shield,
-    title: "Enterprise Security",
-    description:
-      "Bank-grade encryption, DDoS protection, and automated security updates keep your nodes safe.",
+    n: "02",
+    title: "Deploy con un click",
+    body: "Terraform crea il server, Ansible installa e configura il client validator. Segui ogni task in tempo reale dal log.",
   },
   {
-    icon: TrendingUp,
-    title: "Auto-Scaling",
-    description:
-      "Automatically scale resources based on network demands. Never worry about capacity again.",
-  },
-  {
-    icon: Globe,
-    title: "Multi-Region",
-    description:
-      "Deploy across EU, US, and Asia data centers for maximum reliability and low latency.",
-  },
-  {
-    icon: Cpu,
-    title: "Real-time Monitoring",
-    description:
-      "Track performance, uptime, and rewards with live dashboards and instant alerts.",
-  },
-  {
-    icon: Network,
-    title: "40+ Networks",
-    description:
-      "Support for Ethereum, Polygon, Avalanche, Arbitrum, and 36 more blockchain networks.",
+    n: "03",
+    title: "Monitora e dimentica",
+    body: "Stato di sync, uptime e alert dal dashboard. Auto-restart in caso di failure, notifiche via WebSocket.",
   },
 ];
 
-const stats = [
-  { value: "25,000+", label: "Nodes Deployed" },
-  { value: "40+", label: "Blockchains" },
-  { value: "99.9%", label: "Uptime SLA" },
-  { value: "15k+", label: "Happy Users" },
+const FEATURES = [
+  {
+    tag: "Provisioning",
+    title: "Terraform, idempotente",
+    body: "Stato tracciato, rollback automatico se il deploy fallisce.",
+    borderRight: true,
+    borderBottom: true,
+  },
+  {
+    tag: "Configurazione",
+    title: "Ansible, riproducibile",
+    body: "Playbook versionati: firewall, client, chiavi, systemd.",
+    borderRight: false,
+    borderBottom: true,
+  },
+  {
+    tag: "Monitoring",
+    title: "Live via WebSocket",
+    body: "Sync, uptime e log in tempo reale, senza refresh.",
+    borderRight: true,
+    borderBottom: false,
+  },
+  {
+    tag: "Recovery",
+    title: "Auto-restart",
+    body: "Il nodo cade? Riparte da solo, con alert immediato.",
+    borderRight: false,
+    borderBottom: false,
+  },
 ];
 
-const pricingPlans = [
-  {
-    name: "Starter",
-    price: "9.99",
-    features: ["Up to 2 nodes", "Basic monitoring", "Email support", "99% uptime SLA"],
-  },
-  {
-    name: "Pro",
-    price: "29.99",
-    popular: true,
-    features: [
-      "Up to 10 nodes",
-      "Advanced monitoring",
-      "Priority support",
-      "99.9% uptime SLA",
-      "API access",
-    ],
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    features: [
-      "Unlimited nodes",
-      "Custom monitoring",
-      "Dedicated support",
-      "99.99% uptime SLA",
-      "Custom integrations",
-    ],
-  },
-];
+// palette
+const ink = "oklch(0.21 0.015 20)";
+const muted = "oklch(0.45 0.012 20)";
+const wine = "oklch(0.38 0.13 15)";
+const wineDeep = "oklch(0.28 0.09 15)";
+const dashed = "oklch(0.72 0.04 15)";
+const dashSoft = "oklch(0.60 0.06 15)";
+const mono = "var(--font-jetbrains), monospace";
 
 export default function HomePage() {
+  const [count, setCount] = useState(LOGS.length);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCount((c) => (c >= LOGS.length + 2 ? 1 : c + 1));
+    }, 1300);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            (e.target as HTMLElement).animate(
+              [
+                { opacity: 0, transform: "translateY(12px)" },
+                { opacity: 1, transform: "translateY(0)" },
+              ],
+              { duration: 500, easing: "cubic-bezier(0.2,0,0,1)", fill: "backwards" }
+            );
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top > window.innerHeight * 0.9) io.observe(el);
+    });
+
+    return () => {
+      clearInterval(timer);
+      io.disconnect();
+    };
+  }, []);
+
+  const visibleLogs = LOGS.slice(0, Math.min(count, LOGS.length));
+
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
-              <Zap className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-xl font-bold">Maron Nodes</span>
-          </Link>
-          <nav className="hidden md:flex items-center gap-8">
-            <Link
-              href="#features"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Features
-            </Link>
-            <Link
-              href="#networks"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Networks
-            </Link>
-            <Link
-              href="#pricing"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/docs"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Docs
-            </Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button className="gradient-primary hover:opacity-90" asChild>
-              <Link href="/register">Get Started</Link>
-            </Button>
-          </div>
+    <div
+      className={`${manrope.variable} ${jetbrains.variable}`}
+      style={{
+        fontFamily: "var(--font-manrope), sans-serif",
+        color: ink,
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        background: "oklch(0.985 0.003 40)",
+      }}
+    >
+      <style>{`
+        @keyframes mn-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+        @keyframes mn-caret { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+        @keyframes mn-march { to { stroke-dashoffset: -24; } }
+        @keyframes mn-drift { from { background-position: 0 0; } to { background-position: 0 -28px; } }
+        .mn-navlink { color: ${muted}; text-decoration: none; transition: color .15s; }
+        .mn-navlink:hover { color: ${ink}; }
+        .mn-btn-primary { background: ${wine}; border: 1px solid ${wine}; color: #fff; cursor: pointer; transition: background .15s, border-color .15s; font-family: var(--font-manrope), sans-serif; }
+        .mn-btn-primary:hover { background: ${wineDeep}; border-color: ${wineDeep}; }
+        .mn-btn-ghost { background: #fff; color: ${ink}; border: 1px dashed ${dashSoft}; cursor: pointer; transition: background .15s; font-family: var(--font-manrope), sans-serif; }
+        .mn-btn-ghost:hover { background: oklch(0.97 0.012 15); }
+      `}</style>
+
+      {/* Nav */}
+      <header
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "0 48px",
+          height: 64,
+          borderBottom: `1px dashed ${dashed}`,
+          background: "white",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+          <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: "-0.01em" }}>MARON</span>
+          <span
+            style={{
+              fontFamily: mono,
+              fontWeight: 500,
+              fontSize: 13,
+              letterSpacing: "0.14em",
+              color: wine,
+            }}
+          >
+            NODES
+          </span>
         </div>
+        <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
+          <a href="#how" className="mn-navlink" style={{ fontSize: 13, fontWeight: 600 }}>
+            Come funziona
+          </a>
+          <a href="#chains" className="mn-navlink" style={{ fontSize: 13, fontWeight: 600 }}>
+            Chain
+          </a>
+          <a href="#features" className="mn-navlink" style={{ fontSize: 13, fontWeight: 600 }}>
+            Infrastruttura
+          </a>
+          <Link
+            href="/login"
+            className="mn-btn-primary"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              height: 34,
+              padding: "0 16px",
+              fontSize: 13,
+              fontWeight: 700,
+              textDecoration: "none",
+              boxShadow: `3px 3px 0 oklch(0.38 0.13 15 / 0.20)`,
+            }}
+          >
+            Accedi
+          </Link>
+        </nav>
       </header>
 
-      <main className="flex-1">
-        <section className="relative overflow-hidden py-24 md:py-32 lg:py-40">
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl" />
-          </div>
-          <div className="container">
-            <div className="mx-auto max-w-4xl text-center">
-              <div className="mb-6 inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm">
-                <Zap className="mr-2 h-4 w-4 text-primary" />
-                <span>Deploy blockchain nodes in seconds</span>
-              </div>
-              <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-                Run Blockchain Nodes
-                <span className="gradient-text"> Without the Hassle</span>
-              </h1>
-              <p className="mb-10 text-lg text-muted-foreground sm:text-xl max-w-2xl mx-auto">
-                Deploy, manage, and scale validator nodes across 40+ blockchain
-                networks. No DevOps experience required. Starting at just $9.99/month.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="gradient-primary hover:opacity-90 h-12 px-8" asChild>
-                  <Link href="/register">
-                    Start Free Trial
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="h-12 px-8" asChild>
-                  <Link href="/docs">View Documentation</Link>
-                </Button>
-              </div>
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  <span>7-day free trial</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  <span>No credit card required</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-primary" />
-                  <span>Cancel anytime</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+      {/* Hero */}
+      <div style={{ position: "relative", overflow: "hidden" }}>
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            backgroundImage: "radial-gradient(oklch(0.60 0.06 15 / 0.22) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+            animation: "mn-drift 6s linear infinite",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 75% 90% at 60% 40%, black 30%, transparent 100%)",
+            maskImage: "radial-gradient(ellipse 75% 90% at 60% 40%, black 30%, transparent 100%)",
+          }}
+        />
+        <svg
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+          viewBox="0 0 1160 560"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <line x1="0" y1="110" x2="1160" y2="110" stroke="oklch(0.60 0.06 15 / 0.30)" strokeWidth="1" strokeDasharray="8 8" style={{ animation: "mn-march 2.8s linear infinite" }} />
+          <line x1="0" y1="470" x2="1160" y2="470" stroke="oklch(0.60 0.06 15 / 0.25)" strokeWidth="1" strokeDasharray="8 8" style={{ animation: "mn-march 4.5s linear infinite reverse" }} />
+          <line x1="620" y1="0" x2="620" y2="560" stroke="oklch(0.60 0.06 15 / 0.18)" strokeWidth="1" strokeDasharray="6 10" style={{ animation: "mn-march 5.5s linear infinite" }} />
+          <circle cx="620" cy="110" r="3" fill="oklch(0.38 0.13 15 / 0.5)" style={{ animation: "mn-pulse 2.4s ease-in-out infinite" }} />
+          <circle cx="620" cy="470" r="3" fill="oklch(0.38 0.13 15 / 0.35)" style={{ animation: "mn-pulse 2.4s ease-in-out infinite 1.2s" }} />
+        </svg>
 
-        <section className="border-y bg-card/50 py-12">
-          <div className="container">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              {stats.map((stat) => (
-                <div key={stat.label}>
-                  <div className="text-3xl md:text-4xl font-bold gradient-text">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="features" className="py-24">
-          <div className="container">
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Everything you need to run nodes
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Focus on your blockchain journey while we handle the infrastructure
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {features.map((feature) => {
-                const Icon = feature.icon;
-                return (
-                  <Card key={feature.title} className="border-border/50 bg-card/50">
-                    <CardHeader>
-                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                        <Icon className="h-6 w-6 text-primary" />
-                      </div>
-                      <CardTitle className="text-xl">{feature.title}</CardTitle>
-                      <CardDescription className="text-base">
-                        {feature.description}
-                      </CardDescription>
-                    </CardHeader>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section id="networks" className="py-24 bg-card/30">
-          <div className="container">
-            <div className="mx-auto max-w-2xl text-center mb-12">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Supported Networks
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Deploy nodes on 40+ blockchain networks with one click
-              </p>
-            </div>
-            <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
-              {networks.map((network) => (
-                <div
-                  key={network}
-                  className="flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-medium hover:border-primary/50 transition-colors"
-                >
-                  <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                    {network.slice(0, 2).toUpperCase()}
-                  </div>
-                  {network}
-                </div>
-              ))}
-              <div className="flex items-center gap-2 rounded-full border border-dashed bg-transparent px-4 py-2 text-sm font-medium text-muted-foreground">
-                +28 more
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="pricing" className="py-24">
-          <div className="container">
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Simple, Transparent Pricing
-              </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Choose the plan that fits your needs. All plans include a 7-day free trial.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {pricingPlans.map((plan) => (
-                <Card
-                  key={plan.name}
-                  className={`relative ${
-                    plan.popular ? "border-primary shadow-lg glow" : ""
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="rounded-full gradient-primary px-3 py-1 text-xs font-medium text-white">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <CardHeader className="text-center pt-8">
-                    <CardTitle className="text-xl">{plan.name}</CardTitle>
-                    <div className="mt-4">
-                      {plan.price === "Custom" ? (
-                        <span className="text-4xl font-bold">Custom</span>
-                      ) : (
-                        <>
-                          <span className="text-4xl font-bold">${plan.price}</span>
-                          <span className="text-muted-foreground">/month</span>
-                        </>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3 mb-6">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                          <span className="text-sm">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
-                      className={`w-full ${
-                        plan.popular ? "gradient-primary hover:opacity-90" : ""
-                      }`}
-                      variant={plan.popular ? "default" : "outline"}
-                      asChild
-                    >
-                      <Link href="/register">
-                        {plan.price === "Custom" ? "Contact Sales" : "Get Started"}
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-24 bg-card/30">
-          <div className="container">
-            <Card className="gradient-primary text-white border-0">
-              <CardContent className="text-center py-16 px-6">
-                <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                  Ready to start running nodes?
-                </h2>
-                <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
-                  Join thousands of validators already using Maron Nodes to power their blockchain infrastructure.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    className="h-12 px-8"
-                    asChild
-                  >
-                    <Link href="/register">
-                      Start Free Trial
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="h-12 px-8 border-white/30 text-white hover:bg-white/10"
-                    asChild
-                  >
-                    <Link href="/docs">View Documentation</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-      </main>
-
-      <footer className="border-t py-12 bg-card/30">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-            <div className="col-span-2">
-              <Link href="/" className="flex items-center gap-2 mb-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
-                  <Zap className="h-4 w-4 text-white" />
-                </div>
-                <span className="text-lg font-bold">Maron Nodes</span>
+        <section
+          style={{
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "1fr 460px",
+            gap: 56,
+            alignItems: "center",
+            padding: "88px 48px 96px",
+            maxWidth: 1160,
+            margin: "0 auto",
+            boxSizing: "border-box",
+            width: "100%",
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <span
+              style={{
+                fontFamily: mono,
+                fontSize: 11,
+                fontWeight: 500,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: wine,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+              }}
+            >
+              <span style={{ width: 24, borderTop: "1px dashed currentColor" }} />
+              Validator infrastructure, automated
+            </span>
+            <h1
+              style={{
+                margin: 0,
+                fontSize: 52,
+                lineHeight: 1.08,
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                textWrap: "balance",
+              }}
+            >
+              Il tuo validator node, in produzione in minuti.
+            </h1>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 16,
+                lineHeight: 1.6,
+                color: muted,
+                maxWidth: 480,
+                textWrap: "pretty",
+              }}
+            >
+              Maron Nodes provisiona il server, configura il client e monitora il tuo nodo —
+              Terraform e Ansible sotto il cofano, un solo click per te. Su Hetzner o Contabo, con
+              il tuo account.
+            </p>
+            <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+              <Link
+                href="/register"
+                className="mn-btn-primary"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  height: 40,
+                  padding: "0 22px",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  boxShadow: "4px 4px 0 oklch(0.38 0.13 15 / 0.20)",
+                }}
+              >
+                Deploy node
               </Link>
-              <p className="text-sm text-muted-foreground max-w-xs">
-                Deploy and manage blockchain validator nodes with ease. Support for 40+ networks.
-              </p>
+              <a
+                href="#how"
+                className="mn-btn-ghost"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  height: 40,
+                  padding: "0 22px",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+              >
+                Vedi come funziona
+              </a>
             </div>
-            <div>
-              <h3 className="font-semibold mb-4">Product</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link href="#features" className="hover:text-foreground">
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#networks" className="hover:text-foreground">
-                    Networks
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#pricing" className="hover:text-foreground">
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/docs" className="hover:text-foreground">
-                    Documentation
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link href="/about" className="hover:text-foreground">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/blog" className="hover:text-foreground">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/careers" className="hover:text-foreground">
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-foreground">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link href="/privacy" className="hover:text-foreground">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms" className="hover:text-foreground">
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/cookies" className="hover:text-foreground">
-                    Cookie Policy
-                  </Link>
-                </li>
-              </ul>
+            <div
+              style={{
+                display: "flex",
+                gap: 24,
+                fontFamily: mono,
+                fontSize: 11,
+                color: "oklch(0.55 0.01 20)",
+                marginTop: 4,
+              }}
+            >
+              <span>terraform + ansible</span>
+              <span>·</span>
+              <span>chiavi solo tue</span>
+              <span>·</span>
+              <span>monitoring 24/7</span>
             </div>
           </div>
-          <div className="mt-12 pt-8 border-t text-center text-sm text-muted-foreground">
-            <p>&copy; 2026 Maron Nodes. All rights reserved.</p>
+
+          {/* Terminal card */}
+          <div
+            style={{
+              background: "oklch(0.205 0.012 20)",
+              border: `1px dashed oklch(0.55 0.08 15)`,
+              boxShadow: "6px 6px 0 oklch(0.38 0.13 15 / 0.12)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "8px 12px",
+                borderBottom: "1px dashed oklch(1 0 0 / 0.18)",
+              }}
+            >
+              <span
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: "50%",
+                  background: "oklch(0.52 0.12 155)",
+                  animation: "mn-pulse 1.2s ease-in-out infinite",
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: mono,
+                  fontSize: 10,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: "oklch(0.72 0.01 40)",
+                }}
+              >
+                validator-eth-01 — deploy
+              </span>
+            </div>
+            <div
+              style={{
+                padding: "14px 16px",
+                fontFamily: mono,
+                fontSize: 12,
+                lineHeight: 1.9,
+                height: 138,
+                overflow: "hidden",
+              }}
+            >
+              {visibleLogs.map((l, i) => (
+                <div key={i} style={{ display: "flex", gap: 10 }}>
+                  <span style={{ color: "oklch(0.55 0.01 40)" }}>{l.time}</span>
+                  <span style={{ color: l.color }}>{l.text}</span>
+                </div>
+              ))}
+              <span
+                style={{
+                  display: "inline-block",
+                  width: 7,
+                  height: 13,
+                  background: "oklch(0.85 0.005 40)",
+                  animation: "mn-caret 1s step-end infinite",
+                  verticalAlign: "text-bottom",
+                }}
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* How it works */}
+      <section
+        id="how"
+        style={{ borderTop: `1px dashed ${dashed}`, background: "white", padding: "72px 48px" }}
+      >
+        <div
+          style={{
+            maxWidth: 1064,
+            margin: "0 auto",
+            display: "flex",
+            flexDirection: "column",
+            gap: 36,
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <span
+              style={{
+                fontFamily: mono,
+                fontSize: 11,
+                fontWeight: 500,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: wine,
+              }}
+            >
+              Come funziona
+            </span>
+            <h2 style={{ margin: 0, fontSize: 30, fontWeight: 800, letterSpacing: "-0.02em" }}>
+              Tre passi, zero DevOps.
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
+            {STEPS.map((s) => (
+              <div
+                key={s.n}
+                data-reveal
+                style={{
+                  background: "white",
+                  border: `1px dashed ${dashSoft}`,
+                  boxShadow: "4px 4px 0 oklch(0.38 0.13 15 / 0.10)",
+                  padding: 20,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                }}
+              >
+                <span style={{ fontFamily: mono, fontSize: 12, fontWeight: 700, color: wine }}>
+                  {s.n}
+                </span>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em" }}>
+                  {s.title}
+                </h3>
+                <p style={{ margin: 0, fontSize: 13, lineHeight: 1.6, color: muted }}>{s.body}</p>
+              </div>
+            ))}
           </div>
         </div>
+      </section>
+
+      {/* Chains */}
+      <section id="chains" style={{ borderTop: `1px dashed ${dashed}`, padding: 48 }}>
+        <div
+          style={{
+            maxWidth: 1064,
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            gap: 20,
+            flexWrap: "wrap",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: mono,
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "oklch(0.55 0.01 20)",
+            }}
+          >
+            Chain supportate
+          </span>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            {["Ethereum", "Solana", "Polkadot"].map((c) => (
+              <span
+                key={c}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  height: 26,
+                  padding: "0 12px",
+                  fontFamily: mono,
+                  fontSize: 11,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  border: `1px dashed ${dashSoft}`,
+                  color: "oklch(0.30 0.05 15)",
+                  background: "white",
+                }}
+              >
+                {c}
+              </span>
+            ))}
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                height: 26,
+                padding: "0 12px",
+                fontFamily: mono,
+                fontSize: 11,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                border: "1px dashed oklch(0.80 0.02 15)",
+                color: "oklch(0.62 0.01 20)",
+                background: "transparent",
+              }}
+            >
+              + in arrivo
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section
+        id="features"
+        style={{ borderTop: `1px dashed ${dashed}`, background: "white", padding: "72px 48px" }}
+      >
+        <div
+          style={{
+            maxWidth: 1064,
+            margin: "0 auto",
+            display: "grid",
+            gridTemplateColumns: "340px 1fr",
+            gap: 48,
+            alignItems: "start",
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <span
+              style={{
+                fontFamily: mono,
+                fontSize: 11,
+                fontWeight: 500,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: wine,
+              }}
+            >
+              Infrastruttura
+            </span>
+            <h2
+              style={{
+                margin: 0,
+                fontSize: 30,
+                fontWeight: 800,
+                letterSpacing: "-0.02em",
+                textWrap: "balance",
+              }}
+            >
+              Il tuo server, le tue chiavi, la nostra automazione.
+            </h2>
+            <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.6, color: muted }}>
+              Nessun custody: Maron Nodes orchestra l&apos;infrastruttura sul tuo account cloud.
+              Puoi esportare i playbook e andartene quando vuoi.
+            </p>
+          </div>
+          <div
+            data-reveal
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 0,
+              border: `1px dashed ${dashSoft}`,
+            }}
+          >
+            {FEATURES.map((f) => (
+              <div
+                key={f.tag}
+                style={{
+                  padding: 20,
+                  borderRight: f.borderRight ? "1px dashed oklch(0.80 0.02 15)" : undefined,
+                  borderBottom: f.borderBottom ? "1px dashed oklch(0.80 0.02 15)" : undefined,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 6,
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: mono,
+                    fontSize: 10,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: wine,
+                  }}
+                >
+                  {f.tag}
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 700 }}>{f.title}</span>
+                <p style={{ margin: 0, fontSize: 12, lineHeight: 1.6, color: muted }}>{f.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section style={{ borderTop: `1px dashed ${dashed}`, padding: "72px 48px" }}>
+        <div
+          data-reveal
+          style={{
+            maxWidth: 720,
+            margin: "0 auto",
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 16,
+          }}
+        >
+          <h2 style={{ margin: 0, fontSize: 32, fontWeight: 800, letterSpacing: "-0.02em" }}>
+            Il prossimo validator è a un click.
+          </h2>
+          <p style={{ margin: 0, fontSize: 14, color: muted }}>
+            Gratis finché il nodo non è in produzione. Nessuna carta richiesta.
+          </p>
+          <Link
+            href="/register"
+            className="mn-btn-primary"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              height: 44,
+              padding: "0 28px",
+              fontSize: 15,
+              fontWeight: 700,
+              textDecoration: "none",
+              boxShadow: "4px 4px 0 oklch(0.38 0.13 15 / 0.20)",
+            }}
+          >
+            Deploy node
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer
+        style={{
+          borderTop: `1px dashed ${dashed}`,
+          background: "white",
+          padding: "20px 48px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
+          <span style={{ fontWeight: 800, fontSize: 13 }}>MARON</span>
+          <span
+            style={{
+              fontFamily: mono,
+              fontWeight: 500,
+              fontSize: 11,
+              letterSpacing: "0.14em",
+              color: wine,
+            }}
+          >
+            NODES
+          </span>
+        </div>
+        <span style={{ fontFamily: mono, fontSize: 11, color: "oklch(0.62 0.01 20)" }}>
+          © 2026 Maron Nodes
+        </span>
       </footer>
     </div>
   );
