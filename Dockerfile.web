@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 # Build context: repository root (Dokploy convention — see Dockerfile.web / DockerfileFrontend
 # in the other monorepo services). Builds the self-contained Next.js app in apps/web
 # (no workspace/libs imports) into a lean standalone runtime image.
