@@ -17,9 +17,9 @@ pnpm-debug.log*
 .pnpm-store/
 
 # Next.js
-apps/web/.next/
-apps/web/out/
-apps/web/.vercel
+apps/*/.next/
+apps/*/out/
+apps/*/.vercel
 
 # Build outputs
 dist/
@@ -60,3 +60,7 @@ coverage/
 
 .nx/cache
 .nx/workspace-data
+
+# OMC operational artifacts (plans, handoffs, state)
+.omc/
+apps/*/.omc/
