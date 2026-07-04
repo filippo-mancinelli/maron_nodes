@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Maron Nodes — dashboard brand tokens.
+ * Palette bridged from the landing (apps/web/src/app/page.tsx), converted from
+ * oklch to HSL triplets so every shadcn component inherits the brand via hsl(var(--x)).
+ *   bg    oklch(0.985 0.003 40)  -> 40 20% 98%
+ *   ink   oklch(0.21 0.015 20)   -> 20 10% 12%
+ *   muted oklch(0.45 0.012 20)   -> 20 6% 38%
+ *   wine  oklch(0.38 0.13 15)    -> 353 55% 32%
+ *   wineDeep oklch(0.28 0.09 15) -> 353 48% 24%
+ *   dashed oklch(0.72 0.04 15)   -> 15 14% 70%
+ *   dashSoft oklch(0.60 0.06 15) -> 12 18% 58%
+ */
+
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 20 10% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 10% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 10% 12%;
+    --primary: 353 55% 32%;
+    --primary-foreground: 40 20% 98%;
+    --secondary: 24 16% 95%;
+    --secondary-foreground: 20 10% 12%;
+    --muted: 24 12% 94%;
+    --muted-foreground: 20 6% 38%;
+    --accent: 353 55% 32%;
+    --accent-foreground: 40 20% 98%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 40 20% 98%;
+    --border: 15 14% 70%;
+    --input: 15 14% 70%;
+    --ring: 353 55% 32%;
+    --radius: 0.125rem;
+    --success: 155 45% 40%;
+    --success-foreground: 40 20% 98%;
+    --warning: 38 80% 45%;
+    --warning-foreground: 40 20% 98%;
+
+    /* landing-echo raw values for bespoke accents */
+    --mn-wine: 353 55% 32%;
+    --mn-wine-deep: 353 48% 24%;
+    --mn-dashed: 15 14% 70%;
+    --mn-dash-soft: 12 18% 58%;
+    --mn-terminal: 20 20% 14%;
+  }
+
+  .dark {
+    --background: 20 14% 8%;
+    --foreground: 40 20% 96%;
+    --card: 20 14% 11%;
+    --card-foreground: 40 20% 96%;
+    --popover: 20 14% 11%;
+    --popover-foreground: 40 20% 96%;
+    --primary: 353 50% 48%;
+    --primary-foreground: 40 20% 98%;
+    --secondary: 20 8% 18%;
+    --secondary-foreground: 40 20% 96%;
+    --muted: 20 8% 18%;
+    --muted-foreground: 20 8% 62%;
+    --accent: 353 50% 48%;
+    --accent-foreground: 40 20% 98%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 40 20% 98%;
+    --border: 12 12% 32%;
+    --input: 12 12% 32%;
+    --ring: 353 50% 48%;
+    --success: 155 45% 45%;
+    --success-foreground: 40 20% 98%;
+    --warning: 38 80% 55%;
+    --warning-foreground: 20 14% 8%;
+
+    --mn-wine: 353 50% 48%;
+    --mn-wine-deep: 353 48% 36%;
+    --mn-dashed: 12 12% 40%;
+    --mn-dash-soft: 12 14% 50%;
+    --mn-terminal: 20 20% 10%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'ss01', 'cv01';
+  }
+}
+
+@layer components {
+  /*
+   * Dashed-border card treatment echoing the landing:
+   * 1px dashed border + hard offset shadow, near-square corners.
+   */
+  .mn-card {
+    border-style: dashed;
+    box-shadow: 4px 4px 0 hsl(var(--mn-wine) / 0.1);
+  }
+  .mn-card-strong {
+    border-style: dashed;
+    border-color: hsl(var(--mn-dash-soft));
+    box-shadow: 6px 6px 0 hsl(var(--mn-wine) / 0.12);
+  }
+  /* Uppercase mono eyebrow/label, matching the landing section labels. */
+  .mn-label {
+    font-family: var(--font-jetbrains), monospace;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: hsl(var(--mn-wine));
+  }
+  /* Wordmark used in sidebar/header/auth. */
+  .mn-wordmark-main {
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: hsl(var(--foreground));
+  }
+  .mn-wordmark-sub {
+    font-family: var(--font-jetbrains), monospace;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    color: hsl(var(--mn-wine));
+  }
+}
+
+@layer utilities {
+  /* Retained utility names for backward compat — now solid wine, no violet. */
+  .gradient-primary {
+    background-color: hsl(var(--mn-wine));
+    color: hsl(var(--primary-foreground));
+  }
+  .gradient-primary-hover:hover {
+    background-color: hsl(var(--mn-wine-deep));
+  }
+  .gradient-text {
+    color: hsl(var(--mn-wine));
+  }
+  .glass {
+    @apply bg-card/80 backdrop-blur-sm border border-border;
+    border-style: dashed;
+  }
+  .glow {
+    box-shadow: 4px 4px 0 hsl(var(--mn-wine) / 0.12);
+  }
+  .glow-sm {
+    box-shadow: 3px 3px 0 hsl(var(--mn-wine) / 0.14);
+  }
+  /* Hard offset shadow — the landing's signature. */
+  .mn-shadow {
+    box-shadow: 4px 4px 0 hsl(var(--mn-wine) / 0.1);
+  }
+  .mn-shadow-btn {
+    box-shadow: 3px 3px 0 hsl(var(--mn-wine) / 0.2);
+  }
+  .mn-dashed {
+    border-style: dashed;
+  }
+  .font-mono-wide {
+    font-family: var(--font-jetbrains), monospace;
+    letter-spacing: 0.08em;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--mn-dashed));
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--mn-dash-soft));
+}

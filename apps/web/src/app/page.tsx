@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { Manrope, JetBrains_Mono } from "next/font/google";
 
 const manrope = Manrope({
@@ -26,47 +25,47 @@ const LOGS = [
 const STEPS = [
   {
     n: "01",
-    title: "Scegli chain e provider",
-    body: "Ethereum, Solana o Polkadot; server Hetzner o Contabo nella regione che preferisci. Le credenziali cloud restano tue.",
+    title: "Choose chain and provider",
+    body: "Ethereum, Solana or Polkadot; Hetzner or Contabo servers in the region you prefer. Your cloud credentials stay yours.",
   },
   {
     n: "02",
-    title: "Deploy con un click",
-    body: "Terraform crea il server, Ansible installa e configura il client validator. Segui ogni task in tempo reale dal log.",
+    title: "Deploy with one click",
+    body: "Terraform creates the server, Ansible installs and configures the validator client. Follow every task live from the log.",
   },
   {
     n: "03",
-    title: "Monitora e dimentica",
-    body: "Stato di sync, uptime e alert dal dashboard. Auto-restart in caso di failure, notifiche via WebSocket.",
+    title: "Monitor and forget",
+    body: "Sync status, uptime and alerts from the dashboard. Auto-restart on failure, notifications via WebSocket.",
   },
 ];
 
 const FEATURES = [
   {
     tag: "Provisioning",
-    title: "Terraform, idempotente",
-    body: "Stato tracciato, rollback automatico se il deploy fallisce.",
+    title: "Terraform, idempotent",
+    body: "Tracked state, automatic rollback if the deploy fails.",
     borderRight: true,
     borderBottom: true,
   },
   {
-    tag: "Configurazione",
-    title: "Ansible, riproducibile",
-    body: "Playbook versionati: firewall, client, chiavi, systemd.",
+    tag: "Configuration",
+    title: "Ansible, reproducible",
+    body: "Versioned playbooks: firewall, client, keys, systemd.",
     borderRight: false,
     borderBottom: true,
   },
   {
     tag: "Monitoring",
     title: "Live via WebSocket",
-    body: "Sync, uptime e log in tempo reale, senza refresh.",
+    body: "Sync, uptime and logs in real time, no refresh needed.",
     borderRight: true,
     borderBottom: false,
   },
   {
     tag: "Recovery",
     title: "Auto-restart",
-    body: "Il nodo cade? Riparte da solo, con alert immediato.",
+    body: "If the node goes down, it restarts itself, with an instant alert.",
     borderRight: false,
     borderBottom: false,
   },
@@ -80,6 +79,8 @@ const wineDeep = "oklch(0.28 0.09 15)";
 const dashed = "oklch(0.72 0.04 15)";
 const dashSoft = "oklch(0.60 0.06 15)";
 const mono = "var(--font-jetbrains), monospace";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://app.maronnodes.xyz";
 
 export default function HomePage() {
   const [count, setCount] = useState(LOGS.length);
@@ -172,16 +173,16 @@ export default function HomePage() {
         </div>
         <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
           <a href="#how" className="mn-navlink" style={{ fontSize: 13, fontWeight: 600 }}>
-            Come funziona
+            How it works
           </a>
           <a href="#chains" className="mn-navlink" style={{ fontSize: 13, fontWeight: 600 }}>
-            Chain
+            Chains
           </a>
           <a href="#features" className="mn-navlink" style={{ fontSize: 13, fontWeight: 600 }}>
-            Infrastruttura
+            Infrastructure
           </a>
-          <Link
-            href="/login"
+          <a
+            href={`${APP_URL}/login`}
             className="mn-btn-primary"
             style={{
               display: "inline-flex",
@@ -194,8 +195,8 @@ export default function HomePage() {
               boxShadow: `3px 3px 0 oklch(0.38 0.13 15 / 0.20)`,
             }}
           >
-            Accedi
-          </Link>
+            Log in
+          </a>
         </nav>
       </header>
 
@@ -268,7 +269,7 @@ export default function HomePage() {
                 textWrap: "balance",
               }}
             >
-              Il tuo validator node, in produzione in minuti.
+              Your validator node, live in minutes.
             </h1>
             <p
               style={{
@@ -280,13 +281,13 @@ export default function HomePage() {
                 textWrap: "pretty",
               }}
             >
-              Maron Nodes provisiona il server, configura il client e monitora il tuo nodo —
-              Terraform e Ansible sotto il cofano, un solo click per te. Su Hetzner o Contabo, con
-              il tuo account.
+              Maron Nodes provisions the server, configures the client, and monitors your node —
+              Terraform and Ansible under the hood, a single click for you. On Hetzner or Contabo,
+              with your own account.
             </p>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-              <Link
-                href="/register"
+              <a
+                href={`${APP_URL}/register`}
                 className="mn-btn-primary"
                 style={{
                   display: "inline-flex",
@@ -300,7 +301,7 @@ export default function HomePage() {
                 }}
               >
                 Deploy node
-              </Link>
+              </a>
               <a
                 href="#how"
                 className="mn-btn-ghost"
@@ -314,7 +315,7 @@ export default function HomePage() {
                   textDecoration: "none",
                 }}
               >
-                Vedi come funziona
+                See how it works
               </a>
             </div>
             <div
@@ -329,7 +330,7 @@ export default function HomePage() {
             >
               <span>terraform + ansible</span>
               <span>·</span>
-              <span>chiavi solo tue</span>
+              <span>your keys only</span>
               <span>·</span>
               <span>monitoring 24/7</span>
             </div>
@@ -429,10 +430,10 @@ export default function HomePage() {
                 color: wine,
               }}
             >
-              Come funziona
+              How it works
             </span>
             <h2 style={{ margin: 0, fontSize: 30, fontWeight: 800, letterSpacing: "-0.02em" }}>
-              Tre passi, zero DevOps.
+              Three steps, zero DevOps.
             </h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
@@ -485,7 +486,7 @@ export default function HomePage() {
               color: "oklch(0.55 0.01 20)",
             }}
           >
-            Chain supportate
+            Supported chains
           </span>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {["Ethereum", "Solana", "Polkadot"].map((c) => (
@@ -523,7 +524,7 @@ export default function HomePage() {
                 background: "transparent",
               }}
             >
-              + in arrivo
+              + coming soon
             </span>
           </div>
         </div>
@@ -555,7 +556,7 @@ export default function HomePage() {
                 color: wine,
               }}
             >
-              Infrastruttura
+              Infrastructure
             </span>
             <h2
               style={{
@@ -566,11 +567,11 @@ export default function HomePage() {
                 textWrap: "balance",
               }}
             >
-              Il tuo server, le tue chiavi, la nostra automazione.
+              Your server, your keys, our automation.
             </h2>
             <p style={{ margin: "8px 0 0", fontSize: 14, lineHeight: 1.6, color: muted }}>
-              Nessun custody: Maron Nodes orchestra l&apos;infrastruttura sul tuo account cloud.
-              Puoi esportare i playbook e andartene quando vuoi.
+              No custody: Maron Nodes orchestrates the infrastructure on your own cloud account.
+              You can export the playbooks and leave whenever you want.
             </p>
           </div>
           <div
@@ -628,13 +629,13 @@ export default function HomePage() {
           }}
         >
           <h2 style={{ margin: 0, fontSize: 32, fontWeight: 800, letterSpacing: "-0.02em" }}>
-            Il prossimo validator è a un click.
+            Your next validator is one click away.
           </h2>
           <p style={{ margin: 0, fontSize: 14, color: muted }}>
-            Gratis finché il nodo non è in produzione. Nessuna carta richiesta.
+            Free until your node is live in production. No card required.
           </p>
-          <Link
-            href="/register"
+          <a
+            href={`${APP_URL}/register`}
             className="mn-btn-primary"
             style={{
               display: "inline-flex",
@@ -648,7 +649,7 @@ export default function HomePage() {
             }}
           >
             Deploy node
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -661,6 +662,8 @@ export default function HomePage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 16,
         }}
       >
         <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
@@ -677,6 +680,23 @@ export default function HomePage() {
             NODES
           </span>
         </div>
+        <nav style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <a href="#features" className="mn-navlink" style={{ fontFamily: mono, fontSize: 11 }}>
+            Docs
+          </a>
+          <a href="#" className="mn-navlink" style={{ fontFamily: mono, fontSize: 11 }}>
+            Pricing
+          </a>
+          <a href="#" className="mn-navlink" style={{ fontFamily: mono, fontSize: 11 }}>
+            Contact
+          </a>
+          <a href="#" className="mn-navlink" style={{ fontFamily: mono, fontSize: 11 }}>
+            Discord
+          </a>
+          <a href="#" className="mn-navlink" style={{ fontFamily: mono, fontSize: 11 }}>
+            X
+          </a>
+        </nav>
         <span style={{ fontFamily: mono, fontSize: 11, color: "oklch(0.62 0.01 20)" }}>
           © 2026 Maron Nodes
         </span>

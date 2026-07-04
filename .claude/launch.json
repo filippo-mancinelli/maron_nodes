@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@maron/web", "dev", "-p", "3112"],
+      "port": 3112
+    },
+    {
+      "name": "dashboard",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@maron/dashboard", "dev", "-p", "3113"],
+      "port": 3113
+    }
+  ]
+}
